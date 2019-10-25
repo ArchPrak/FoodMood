@@ -55,7 +55,7 @@ plt.title("Scatter plot for Rating vs Votes")
 plt.show()
 
 
-# bar plot ##########
+# bar plot ###############################
 import seaborn as sns
 
 
@@ -103,6 +103,57 @@ plt.axis("off")
 plt.margins(x=0, y=0)
 plt.title("Famous dishes in BTM (area with max food outlets)")
 plt.show()
+
+
+# correlogram ##############################
+plt.figure(figsize=(12,10), dpi= 80)
+sns.heatmap(new1.corr(), xticklabels=new1.corr().columns, yticklabels=new1.corr().columns, cmap='RdYlGn', center=0, annot=True)
+
+# Decorations
+plt.title('Correlogram ', fontsize=22)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.show()
+
+
+
+# hist ##################
+plot1=sns.distplot(new1["approx_cost(for two people)"],kde=False)
+plot1.set_title("Distribution of Approx cost for 2 people")
+plt.show()
+
+plot2=sns.distplot(new1["rate"],kde=False)
+plot2.set_title("Distribution of Rating")
+plt.show()
+
+
+
+# pie chart ################
+# Pie chart, where the slices will be ordered and plotted counter-clockwise:
+sizes = list(new1["online_order"].value_counts())
+labels =["Yes","No"]
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+plt.title("Online order")
+plt.show()
+
+
+sizes = list(new1["book_table"].value_counts())
+labels =["No","Yes"]
+ 
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+plt.title("Book table")
+plt.show()
+
+
+
+
 
 
 
