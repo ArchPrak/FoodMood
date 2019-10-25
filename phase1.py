@@ -152,6 +152,55 @@ plt.title("Book table")
 plt.show()
 
 
+###LASSO ###############################
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+data=new1
+Y=new1["rate"]
+data=data.drop(["rate","address", "name","location","rest_type","cuisines","reviews_list","listed_in(city)"],axis=1)
+X=pd.get_dummies(data["listed_in(type)"],prefix=['Type'])
+#X 
+result = pd.concat([data, X], axis=1).reindex(data.index)
+#result
+X=result
+X=X.drop(["listed_in(type)"],axis=1)
+#X
+
+
+X_train,X_test,y_train,y_test=train_test_split(X,Y, test_size=0.3, random_state=31)
+lasso = Lasso()
+lasso.fit(X_train,y_train)
+train_score=lasso.score(X_train,y_train)
+test_score=lasso.score(X_test,y_test)
+coeff_used = np.sum(lasso.coef_!=0)
+print ("training score:", train_score )
+print ("test score: ", test_score)
+print ("number of features used: ", coeff_used)
+
+lasso001 = Lasso(alpha=0.01, max_iter=10e5)
+lasso001.fit(X_train,y_train)
+train_score001=lasso001.score(X_train,y_train)
+test_score001=lasso001.score(X_test,y_test)
+coeff_used001 = np.sum(lasso001.coef_!=0)
+print ("training score for alpha=0.01:", train_score001 )
+print ("test score for alpha =0.01: ", test_score001)
+print ("number of features used: for alpha =0.01:", coeff_used001)
+
+lasso00001 = Lasso(alpha=0.0001, max_iter=10e5)
+lasso00001.fit(X_train,y_train)
+train_score00001=lasso00001.score(X_train,y_train)
+test_score00001=lasso00001.score(X_test,y_test)
+coeff_used00001 = np.sum(lasso00001.coef_!=0)
+
+print ("training score for alpha=0.0001:", train_score00001 )
+print ("test score for alpha =0.0001: ", test_score00001)
+print ("number of features used: for alpha =0.0001:", coeff_used00001)
+
+
+
+
 
 
 
