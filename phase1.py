@@ -41,3 +41,71 @@ new1.name= new1.name.map(lambda x: x.encode('ascii','ignore').decode('ascii'))
 new1['approx_cost(for two people)']=new1['approx_cost(for two people)'].replace(",","", regex=True)
 new1['approx_cost(for two people)']=new1['approx_cost(for two people)'].astype('float32')
 
+###########################################################################################
+
+#EDA
+
+# scatter plot #############################
+
+import matplotlib.pyplot as plt
+plt.scatter(new1["votes"],new1["rate"])
+plt.ylabel('Rating')
+plt.xlabel('Votes')
+plt.title("Scatter plot for Rating vs Votes")
+plt.show()
+
+
+# bar plot ##########
+import seaborn as sns
+
+
+n=new1["listed_in(city)"].value_counts()
+print(sum(n))
+
+height =list(n)
+bars = list(n.keys())
+y_pos = np.arange(len(bars))
+#s=sns.color_palette("husl", 8)
+plt.bar(y_pos, height,color=sns.color_palette())
+plt.xticks(y_pos, bars,rotation="vertical")
+plt.ylim(0,3000)
+plt.xlabel("Location")
+plt.ylabel("No. of restaurants")
+plt.title("Areawise Restaurant count")
+plt.show()
+
+# wordcloud ##############################
+
+# Libraries
+from wordcloud import WordCloud
+
+data=df
+
+#finding most popular location
+#pop_location="Banashankari"
+pop_location=data.mode()["location"]
+
+#filtering to get rows with that location
+d=data.loc[data["location"] == pop_location[0]]
+
+l=[]
+for i in list(d["dish_liked"]):
+    if type(i)==str:
+        l.extend(i.split(","))
+
+text=" ".join(l) 
+# Create the wordcloud object
+wordcloud = WordCloud(width=480, height=480, margin=0).generate(text)
+ 
+# Display the generated image:
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.margins(x=0, y=0)
+plt.title("Famous dishes in BTM (area with max food outlets)")
+plt.show()
+
+
+
+
+
+
