@@ -183,3 +183,153 @@ plt.title("Book table")
 plt.show()
 
 
+
+######################## Lasso and Linear Regression ####################################
+
+data=new1
+Y=new1["rate"]
+data=data.drop(["rate","address", "name","location","rest_type","cuisines","reviews_list","listed_in(city)"],axis=1)
+X=pd.get_dummies(data["listed_in(type)"])
+result = pd.concat([data, X], axis=1).reindex(data.index)
+X=result
+X=X.drop(["listed_in(type)"],axis=1)
+
+
+X_train,X_test,y_train,y_test=train_test_split(X,Y, test_size=0.3, random_state=31)
+
+lasso = Lasso()
+lasso.fit(X_train,y_train)
+train_score=lasso.score(X_train,y_train)
+test_score=lasso.score(X_test,y_test)
+coeff_used = np.sum(lasso.coef_!=0)
+print ("training score:", train_score )
+print ("test score: ", test_score)
+print ("number of features used: ", coeff_used)
+
+#Alpha= 0.01
+lasso001 = Lasso(alpha=0.01, max_iter=10e5)
+lasso001.fit(X_train,y_train)
+train_score001=lasso001.score(X_train,y_train)
+test_score001=lasso001.score(X_test,y_test)
+coeff_used001 = np.sum(lasso001.coef_!=0)
+print ("training score for alpha=0.01:", train_score001 )
+print ("test score for alpha =0.01: ", test_score001)
+print ("number of features used: for alpha =0.01:", coeff_used001)
+
+#Alpha= 0.0001
+lasso00001 = Lasso(alpha=0.0001, max_iter=10e5)
+lasso00001.fit(X_train,y_train)
+train_score00001=lasso00001.score(X_train,y_train)
+test_score00001=lasso00001.score(X_test,y_test)
+coeff_used00001 = np.sum(lasso00001.coef_!=0)
+print ("training score for alpha=0.01:", train_score00001 )
+print ("test score for alpha =0.01: ", test_score00001)
+print ("number of features used: for alpha =0.01:", coeff_used00001)
+
+#Linear regression
+lr = LinearRegression()
+lr.fit(X_train,y_train)
+lr_train_score=lr.score(X_train,y_train)
+lr_test_score=lr.score(X_test,y_test)
+print ("LR training score:", lr_train_score )
+print ("LR test score: ", lr_test_score)
+
+
+########################### Feature Selection #################################
+
+new1.groupby(['listed_in(city)']) #Grouping dataframe by locality
+
+#Getting counts of restaurants in each locality
+dloc={}
+
+for i in range(len(new1)):
+    if(new1["listed_in(city)"][i] not in dloc):
+        dloc[new1["listed_in(city)"][i]]=0
+    dloc[new1["listed_in(city)"][i]]+=1
+
+
+#Getting required indices in dataframe for each locality
+i=0
+start=0
+end=0
+locind=[]
+for i in dloc:
+    end=start+dloc[i]-1
+    locind.append((start,end))
+    start=end+1
+
+print(len(locind))
+
+
+#Decision tree function
+def dt(df, rate, location):
+	#Features used in the decision tree
+    feat_labels=["online_order", "book_table", "votes", "approx_cost(for two people)", "listed_in(type)"]
+
+    data=df
+
+    #Getting one-hot encoding of restaurant type
+    X= pd.get_dummies(data,columns=['listed_in(type)'])
+
+    y=[]
+
+    #df is a dataframe and each row is a tuple with all features at index [1]
+    
+    for i in rate:
+        if(i>=3.8):
+            y.append(1)
+        else:
+            y.append(0)
+        
+    # Split the data into 40% test and 60% training
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=0)
+
+    # Create a random forest classifier
+    clf = DecisionTreeClassifier(criterion = "gini", 
+            random_state = 100,max_depth=10, min_samples_leaf=5)
+
+    # Train the classifier
+    clf.fit(X_train, y_train)
+    
+    y_pred=clf.predict(X_test)
+    a=accuracy_score(y_test,y_pred)
+
+    out=[]
+    # Appending the name and gini importance of each feature
+    for feature in zip(feat_labels, clf.feature_importances_):
+        out.append(feature)
+
+    print("%s: %f"%(location,a*100),"%")
+    return out
+
+
+
+#Function to call the decision tree for every locality
+def makedf(i,j,orgdf):
+    locdf=orgdf[i:j+1]
+    location=list(locdf["listed_in(city)"])[1]
+    rate=list(locdf["rate"])
+    locdf=locdf.drop(["address","name","rate","location","rest_type","cuisines","reviews_list","listed_in(city)"],axis=1)
+    l=dt(locdf,rate, location)
+    return (location,l)
+
+
+print("The accuracies of the decision tree prediction for various locations are as follows:")
+locfeatures=[]
+for i in range(len(locind)):
+    locfeatures.append(makedf(locind[i][0],locind[i][1],new1))
+
+
+
+print("The top 3 features influencing the food culture of the locations are:")
+for i in range(len(locfeatures)):
+    print(locfeatures[i][0],':')
+    locfeatures[i][1].sort(key=lambda x: x[1], reverse=True)
+    print("   ",locfeatures[i][1][0][0],'-->',round(locfeatures[i][1][0][1]*100, 2),"%")
+    print("   ",locfeatures[i][1][1][0],'-->',round(locfeatures[i][1][1][1]*100, 2),"%")
+    print("   ",locfeatures[i][1][2][0],'-->',round(locfeatures[i][1][2][1]*100, 2),"%")
+
+
+
+
+
