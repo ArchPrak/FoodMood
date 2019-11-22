@@ -111,3 +111,75 @@ plt.xlabel('Votes')
 plt.show()
 
 
+#Bar graph for count of restaurants in every locality
+	# Make a fake dataset
+n=new1["listed_in(city)"].value_counts()
+print(sum(n))
+
+height =list(n)
+bars = list(n.keys())
+y_pos = np.arange(len(bars))
+plt.bar(y_pos, height,color=sns.color_palette())
+plt.xticks(y_pos, bars,rotation="vertical")
+plt.ylim(0,3000)
+plt.xlabel("Location")
+plt.ylabel("No. of restaurants")
+plt.show()
+
+
+#Bar graph for count of restaurants in every locality
+	# Make a fake dataset
+n=new1["listed_in(type)"].value_counts()
+print(sum(n))
+
+height =list(n)
+bars = list(n.keys())
+y_pos = np.arange(len(bars))
+plt.bar(y_pos, height,color=sns.color_palette())
+plt.xticks(y_pos, bars,rotation="vertical")
+plt.ylim(0,25000)
+plt.xlabel("Type")
+plt.ylabel("No. of restaurants")
+plt.show()
+
+
+#Distributions
+sum1=0
+for i in new1["approx_cost(for two people)"]:
+    if i==500:
+        sum1+=1
+
+
+    #For approximate cost
+sns.distplot(new1["approx_cost(for two people)"],kde=False)
+	#For rating
+sns.distplot(new1["rate"],kde=False)
+
+
+
+#Pie chart
+	#Online ordering
+sizes = list(new1["online_order"].value_counts())
+labels =["Yes","No"]
+ 
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  
+
+plt.title("Online order")
+plt.show()
+
+	#Book table
+sizes = list(new1["book_table"].value_counts())
+labels =["No","Yes"]
+ 
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  
+
+plt.title("Book table")
+plt.show()
+
+
