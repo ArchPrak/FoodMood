@@ -60,3 +60,54 @@ new1['approx_cost(for two people)']=new1['approx_cost(for two people)'].astype('
 
 #Reindexing dataset
 new1.index= range(len(new1))
+
+##################################### EDA #############################################################################3
+#Correlogram
+plt.figure(figsize=(12,10), dpi= 80)
+sns.heatmap(new1.corr(), xticklabels=new1.corr().columns, yticklabels=new1.corr().columns, cmap='RdYlGn', center=0, annot=True)
+
+plt.title('Correlogram ', fontsize=22)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.show()
+
+#Printing contingency table
+contingency_table=pd.crosstab(data["book_table"],data["online_order"])
+print('contingency_table :-\n',contingency_table)
+
+
+#Wordcloud
+data=df
+
+	#Finding most popular location
+	#pop_location="Banashankari"
+pop_location=data.mode()["location"]
+
+	#Filtering to gwt rows with that location
+d=data.loc[data["location"] == pop_location[0]]
+
+l=[]
+for i in list(d["dish_liked"]):
+    if type(i)==str:
+        l.extend(i.split(","))
+
+text=" ".join(l) 
+
+	#Create the wordcloud object
+wordcloud = WordCloud(width=480, height=480, margin=0).generate(text)
+ 
+	#Display the generated image:
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.margins(x=0, y=0)
+plt.show()
+
+
+
+#Scatter plot
+plt.scatter(new1["votes"],new1["rate"])
+plt.ylabel('Rating')
+plt.xlabel('Votes')
+plt.show()
+
+
