@@ -331,5 +331,165 @@ for i in range(len(locfeatures)):
 
 
 
+############################# Evaluating the cost range #####################################
+
+#Grouping approx. costs into bins of varying sizes
+new2=new1.copy(deep=False)
+new2['cost_bins'] = pd.cut(x=new1['approx_cost(for two people)'], bins=[0, 300, 600, 1200, 2000, 4000,6000])
+
+cbd= {}
+label=0
+for i in range(len(new2)):
+    if(new2['cost_bins'][i] not in cbd):
+        cbd[new2['cost_bins'][i]]=label
+        label+=1
+
+l=[]
+for i in range(len(new2)):
+    l.append(cbd[new2['cost_bins'][i]])
+    
+new2['cb_class']=l
+
+
+
+#Logistic Regression
+pred_final=[]
+act_final=[]
+d=new2.copy(deep=False)
+
+y= list(d['cb_class'])
+x_= d.drop(["address","name","rate","location","rest_type","cuisines","approx_cost(for two people)","reviews_list","cost_bins",'cb_class'],axis=1)
+
+	#Getting one-got encoding of restaurant type and location
+x= pd.get_dummies(x_,columns=['listed_in(type)','listed_in(city)'])
+
+
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=0)
+scaler = StandardScaler()
+scaler.fit(X_train)
+
+	#Normalizing data
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
+
+	#Model
+model= LogisticRegression(solver = 'lbfgs')
+model.fit(X_train,y_train)
+pred=model.predict(X_test)
+act_final=y_test
+pred_final=pred
+
+
+print("The accuracy of the predicted cost for two people using logistic regression is:")
+print(round(accuracy_score(act_final,pred_final)*100, 2),"%\n")
+
+print("The confusion matrix for the model is printed:")
+print("   0 --> 600 to 1200 Rs.")
+print("   1 --> 0 to 300 Rs.")
+print("   2 --> 300 to 600 Rs.")
+print("   3 --> 1200 to 2000 Rs.")
+print("   4 --> 2000 to 4000 Rs.")
+print("   5 --> 4000 to 6000 Rs.\n")
+print(confusion_matrix(act_final,pred_final,labels=[0,1,2,3,4,5]))
+
+
+
+#Artificial Neural Network
+
+
+d=new2.copy(deep=False)
+
+y= pd.get_dummies(d['cb_class'])
+x_= d.drop(["address","name","rate","location","rest_type","cuisines","approx_cost(for two people)","reviews_list","cost_bins",'cb_class'],axis=1)
+
+	#Getting one-got encoding of restaurant type and location
+x= pd.get_dummies(x_,columns=['listed_in(type)','listed_in(city)'])
+
+
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=0)
+scaler = StandardScaler()
+scaler.fit(X_train)
+
+	#Normalizing data
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
+    
+
+    #Model
+model = Sequential()
+model.add(Dense(32, input_dim=40, init='uniform', activation='relu'))
+model.add(Dense(6, init='uniform', activation='softmax'))
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+history = model.fit(X_train, y_train, nb_epoch=50, batch_size=50,  verbose=1)
+
+	#Print Accuracy
+scores = model.evaluate(X_test, y_test) 
+
+pred= model.predict(X_test)
+
+
+l=y_test.values.tolist()
+act_final=[l[i].index(max(l[i])) for i in range(len(l))]
+m=list(pred)
+pred_final=[list(m[i]).index(max(m[i])) for i in range(len(m))]
+
+print("The accuracy of the predicted cost for two people using neural network is:")
+print(round(scores[1]*100,2),"%\n")
+
+print("The confusion matrix for the model is printed:")
+print("   0 --> 600 to 1200 Rs.")
+print("   1 --> 0 to 300 Rs.")
+print("   2 --> 300 to 600 Rs.")
+print("   3 --> 1200 to 2000 Rs.")
+print("   4 --> 2000 to 4000 Rs.")
+print("   5 --> 4000 to 6000 Rs.\n")
+print(confusion_matrix(act_final,pred_final,labels=[0,1,2,3,4,5]))
+
+
+######################### Location wise bar plot ######################################
+
+#Function for plotting location wise bar plot
+def myplot(feat,i,j,df):
+    df=df[i:j+1]
+    df=df[df["rate"]>3.8]
+    n=df[feat].value_counts()
+    l=list(zip(list(n),list(n.keys())))
+    l.sort(key=lambda tup:tup[1])
+    height =[x[0] for x in l]
+    bars = [x[1] for x in l]
+
+    y_pos = np.arange(len(bars))
+    plt.bar(y_pos, height,color=sns.color_palette())
+    plt.xticks(y_pos, bars,rotation="vertical")
+    plt.xlabel("Suitable values")
+    plt.ylabel("Count")
+    plt.title("Values for "+ feat)
+    plt.show()
+    
+    
+#Dictionary : {location : index in locfeature list}
+d={}
+for i in range(len(locfeatures)):
+    d[locfeatures[i][0]]=i  
+
+#Sort in desc order of importance
+for location in d:
+    locfeatures[d[location]][1].sort(key=lambda tup: tup[1],reverse =True)
+
+#Location
+l="Banashankari"
+
+#2 top features
+f1=locfeatures[d[l]][1][0][0]
+f2=locfeatures[d[l]][1][1][0]
+
+#Start and end for that location
+start,end=locind[d[l]]
+
+#Make subset and plot 
+myplot(f1,start,end,new1)
+myplot(f2,start,end,new1)
+
 
 
