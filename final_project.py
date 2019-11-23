@@ -534,3 +534,118 @@ def sentscore(df):
 
 sentscore(new1)
 
+
+############################## Feature value prediction ###################################
+
+
+#Decision tree function
+def dt(df, rate, testx):
+    feat_labels=["online_order", "book_table", "cb_class", "listed_in(type)"]
+
+    data=df
+
+    l=pd.Series(LabelEncoder().fit_transform(data['listed_in(type)']))
+    
+    X= pd.concat([data, l], axis=1).reindex(data.index)
+    X=X.drop(['listed_in(type)'],axis=1)
+
+    #Label encoding the restaurant types
+    l1=pd.Series(LabelEncoder().fit_transform(testx['listed_in(type)']))
+    testx= pd.concat([testx, l1], axis=1).reindex(testx.index)
+    
+    
+    test=testx.drop(['listed_in(type)'],axis=1)
+    y=list()
+
+    for i in rate:
+        j= round(i,0)
+        y.append(str(j))
+
+    # Split the data into 40% test and 60% training
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=0)
+
+    # Create a random forest classifier
+    clf = RandomForestClassifier(n_estimators=1000, random_state=0, n_jobs=-1)
+
+    # Train the classifier
+    clf.fit(X_train, y_train)
+    
+    y_pred=clf.predict(X_test)
+    
+    y_pred_new = clf.predict(test)
+    a=accuracy_score(y_test,y_pred)
+
+    print(a)
+    
+    testx['pred_ratings']=y_pred_new
+    return testx
+
+
+
+def bestvalues(l,i,j,df):
+    df=df[i:j+1]
+    df.index=(range(0,len(df)))
+    rate= df['rate']
+    df=df.drop(["rate"],axis=1)
+    
+    #Set of values for all columns
+    u1=set(list(df["online_order"]))
+    u2=set(list(df["book_table"]))
+    u4=set(list(df["listed_in(type)"]))
+    u3=set(list(df["cb_class"]))
+    
+    testx=[]
+    
+    for i in u1:
+        for j in u2:
+            for k in u3:
+                for l in u4:
+                    testx.append([i,j,k,l])
+
+    #Model trained with df 
+    #testx predicted
+    #Max value of rating/sentscore fiund, corresponding row returned 
+    
+    testx=pd.DataFrame(testx,columns=["online_order","book_table","cb_class","listed_in(type)"])
+    return dt(df,rate,testx)
+
+#Some location
+l="Whitefield"    
+
+
+d={}
+locations=list(dloc.keys())
+for i in range(len(locations)):
+    d[locations[i]]=i 
+
+
+start, end= locind[d[l]]
+df=new2[["online_order","rate","book_table","cb_class","listed_in(type)"]]
+
+#Function called for location l
+best=bestvalues(l,start,end,df)
+
+#Max rating found and all rows with that rating are chosen
+big= max(best['pred_ratings'])
+bestest=best[best["pred_ratings"]>=big]
+bestest.index = range(len(bestest))
+
+
+#List out keys and values separately 
+key_list = list(cbd.keys()) 
+val_list = list(cbd.values()) 
+
+print("Suggested combinations for the upcoming restaurant:\n")
+  
+print("Online order   |   Book table   |   Cost range   |   Restaurant type")
+print("---------------------------------------------------------------------")
+for i in range(len(bestest)):
+    oo= bestest['online_order'][i]
+    bt= bestest['book_table'][i]
+    cb= bestest['cb_class'][i]
+    typ= bestest['listed_in(type)'][i]
+    
+    d={0:"No", 1:"Yes"}
+    
+    print(d[oo],"           |",d[bt],"             |",str(key_list[val_list.index(cb)]).lstrip('(').rstrip(']'),"  |",typ)
+
