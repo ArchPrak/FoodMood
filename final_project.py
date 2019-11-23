@@ -650,10 +650,7 @@ for i in range(len(bestest)):
     print(d[oo],"           |",d[bt],"             |",str(key_list[val_list.index(cb)]).lstrip('(').rstrip(']'),"  |",typ)
 
 
-
-
 new1['sent_scores']=sentscore(new1)
-
 
 
 ############################ Pie charts for top features ################################
@@ -701,7 +698,6 @@ plt.title(title)
 plt.show()
 
 
-
 ########################### Scatter plots of sentiment scores ##############################
 
 import numpy as np
@@ -731,4 +727,5 @@ plt.title("Approx_cost vs Sentiment scores")
 plt.xlabel("Approx_cost")
 plt.ylabel("Positive sentiment scores")
 plt.show()
+
 
