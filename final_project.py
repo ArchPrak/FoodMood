@@ -532,7 +532,7 @@ def sentscore(df):
     return pos_list
 
 
-new1['sent_scores']=sentscore(new1)
+sentscore(new1)
 
 
 ############################## Feature value prediction ###################################
@@ -650,6 +650,9 @@ for i in range(len(bestest)):
     print(d[oo],"           |",d[bt],"             |",str(key_list[val_list.index(cb)]).lstrip('(').rstrip(']'),"  |",typ)
 
 
+new1['sent_scores']=sentscore(new1)
+
+
 ############################ Pie charts for top features ################################
 import matplotlib.pyplot as plt
 
@@ -692,6 +695,37 @@ plt.legend(a[0], l, bbox_to_anchor=(1.35,0.025), loc="lower right")
 plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
 plt.title(title)
+plt.show()
+
+
+########################### Scatter plots of sentiment scores ##############################
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler,LabelEncoder
+
+
+l=[round(x,2) for x in new1['sent_scores']]
+plt.scatter(list(new1['votes']),l,marker='.')
+plt.title("Votes vs Sentiment scores")
+plt.xlabel("Votes")
+plt.ylabel("Positive sentiment scores")
+plt.show()
+
+
+l=[round(x,2) for x in new1['sent_scores']]
+plt.scatter(list(new1['rate']),l,marker='.')
+plt.title("Rate vs Sentiment scores")
+plt.xlabel("Rate")
+plt.ylabel("Positive sentiment scores")
+plt.show()
+
+
+l=[round(x,2) for x in new1['sent_scores']]
+plt.scatter(list(new1['approx_cost(for two people)']),l,marker='.')
+plt.title("Approx_cost vs Sentiment scores")
+plt.xlabel("Approx_cost")
+plt.ylabel("Positive sentiment scores")
 plt.show()
 
 
