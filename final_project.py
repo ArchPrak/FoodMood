@@ -649,3 +649,54 @@ for i in range(len(bestest)):
     
     print(d[oo],"           |",d[bt],"             |",str(key_list[val_list.index(cb)]).lstrip('(').rstrip(']'),"  |",typ)
 
+
+
+
+new1['sent_scores']=sentscore(new1)
+
+
+
+############################ Pie charts for top features ################################
+import matplotlib.pyplot as plt
+
+title=locfeatures[6][0]
+imps = [locfeatures[6][1][0][1],locfeatures[6][1][1][1],locfeatures[6][1][2][1]]
+labels =[locfeatures[6][1][0][0],locfeatures[6][1][1][0],locfeatures[6][1][2][0]]
+sizes=[i/sum(imps) for i in imps]
+a=plt.pie(sizes,shadow=True, startangle=90)
+l=[str(a)+', '+str(round(b*100,2))+'%' for a,b in list(zip(labels,sizes))]
+plt.legend(a[0], l, bbox_to_anchor=(1.35,0.025), loc="lower right")
+
+plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+plt.title(title)
+plt.show()
+
+
+title=locfeatures[19][0]
+imps = [locfeatures[19][1][0][1],locfeatures[19][1][1][1],locfeatures[19][1][2][1]]
+labels =[locfeatures[19][1][0][0],locfeatures[19][1][1][0],locfeatures[19][1][2][0]]
+sizes=[i/sum(imps) for i in imps]
+a=plt.pie(sizes,shadow=True, startangle=90)
+l=[str(a)+', '+str(round(b*100,2))+'%' for a,b in list(zip(labels,sizes))]
+plt.legend(a[0], l, bbox_to_anchor=(1.35,0.025), loc="lower right")
+
+plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+plt.title(title)
+plt.show()
+
+
+title=locfeatures[16][0]
+imps = [locfeatures[16][1][0][1],locfeatures[16][1][1][1],locfeatures[16][1][2][1]]
+labels =[locfeatures[16][1][0][0],locfeatures[16][1][1][0],locfeatures[16][1][2][0]]
+sizes=[i/sum(imps) for i in imps]
+a=plt.pie(sizes,shadow=True, startangle=90)
+l=[str(a)+', '+str(round(b*100,2))+'%' for a,b in list(zip(labels,sizes))]
+plt.legend(a[0], l, bbox_to_anchor=(1.35,0.025), loc="lower right")
+
+plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+plt.title(title)
+plt.show()
+
