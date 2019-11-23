@@ -491,6 +491,50 @@ start,end=locind[d[l]]
 myplot(f1,start,end,new1)
 myplot(f2,start,end,new1)
 
+
+
+
+################################## Sentiment scores #######################################
+### !!!!! This code takes a lot of time to run and hence the results are stored in a file pos_list.txt !!!!!
+
+#Sentiment scores analyzer
+analyzer=SentimentIntensityAnalyzer()
+english_stop_words = stopwords.words('english')
+
+def remove_stop_words(corpus):
+    l=[]
+    words=corpus.split()
+    for word in words:
+        if word not in english_stop_words:
+            l.append(word)
+    return " ".join(l)
+
+
+def sentscore(df): 
+    pos_list=[]
+
+    for i in range(len(df)):
+        line= list(df["reviews_list"])[i]
+    
+    	#Stop word removal for every row and other processing
+        review = re.sub('\\n',"", line.lower()) 
+        review= re.sub('[^a-zA-Z]',' ',review.lower())
+        review = re.sub('rated',"", review.lower()) 
+        review = remove_stop_words(review)
+    
+    	#Getting the positive scores
+        pos=(analyzer.polarity_scores(review))['pos']
+    
+        pos_list.append(pos)
+    
+        print(i,pos)
+        
+    return pos_list
+
+
+new1['sent_scores']=sentscore(new1)
+
+
 ############################## Feature value prediction ###################################
 
 
@@ -606,49 +650,6 @@ for i in range(len(bestest)):
     print(d[oo],"           |",d[bt],"             |",str(key_list[val_list.index(cb)]).lstrip('(').rstrip(']'),"  |",typ)
 
 
-
-################################## Sentiment scores #######################################
-### !!!!! This code takes a lot of time to run and hence the results are stored in a file pos_list.txt !!!!!
-
-#Sentiment scores analyzer
-analyzer=SentimentIntensityAnalyzer()
-english_stop_words = stopwords.words('english')
-
-def remove_stop_words(corpus):
-    l=[]
-    words=corpus.split()
-    for word in words:
-        if word not in english_stop_words:
-            l.append(word)
-    return " ".join(l)
-
-
-def sentscore(df): 
-    pos_list=[]
-
-    for i in range(len(df)):
-        line= list(df["reviews_list"])[i]
-    
-    	#Stop word removal for every row and other processing
-        review = re.sub('\\n',"", line.lower()) 
-        review= re.sub('[^a-zA-Z]',' ',review.lower())
-        review = re.sub('rated',"", review.lower()) 
-        review = remove_stop_words(review)
-    
-    	#Getting the positive scores
-        pos=(analyzer.polarity_scores(review))['pos']
-    
-        pos_list.append(pos)
-    
-        print(i,pos)
-        
-    return pos_list
-
-
-new1['sent_scores']=sentscore(new1)
-
-
-
 ############################ Pie charts for top features ################################
 import matplotlib.pyplot as plt
 
@@ -692,4 +693,5 @@ plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
 plt.title(title)
 plt.show()
+
 
