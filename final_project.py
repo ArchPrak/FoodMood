@@ -700,3 +700,35 @@ plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.title(title)
 plt.show()
 
+
+
+########################### Scatter plots of sentiment scores ##############################
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler,LabelEncoder
+
+
+l=[round(x,2) for x in new1['sent_scores']]
+plt.scatter(list(new1['votes']),l,marker='.')
+plt.title("Votes vs Sentiment scores")
+plt.xlabel("Votes")
+plt.ylabel("Positive sentiment scores")
+plt.show()
+
+
+l=[round(x,2) for x in new1['sent_scores']]
+plt.scatter(list(new1['rate']),l,marker='.')
+plt.title("Rate vs Sentiment scores")
+plt.xlabel("Rate")
+plt.ylabel("Positive sentiment scores")
+plt.show()
+
+
+l=[round(x,2) for x in new1['sent_scores']]
+plt.scatter(list(new1['approx_cost(for two people)']),l,marker='.')
+plt.title("Approx_cost vs Sentiment scores")
+plt.xlabel("Approx_cost")
+plt.ylabel("Positive sentiment scores")
+plt.show()
+
