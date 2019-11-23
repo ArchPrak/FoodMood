@@ -494,4 +494,43 @@ myplot(f2,start,end,new1)
 
 
 
+################################## Sentiment scores #######################################
+### !!!!! This code takes a lot of time to run and hence the results are stored in a file pos_list.txt !!!!!
+
+#Sentiment scores analyzer
+analyzer=SentimentIntensityAnalyzer()
+english_stop_words = stopwords.words('english')
+
+def remove_stop_words(corpus):
+    l=[]
+    words=corpus.split()
+    for word in words:
+        if word not in english_stop_words:
+            l.append(word)
+    return " ".join(l)
+
+
+def sentscore(df): 
+    pos_list=[]
+
+    for i in range(len(df)):
+        line= list(df["reviews_list"])[i]
+    
+    	#Stop word removal for every row and other processing
+        review = re.sub('\\n',"", line.lower()) 
+        review= re.sub('[^a-zA-Z]',' ',review.lower())
+        review = re.sub('rated',"", review.lower()) 
+        review = remove_stop_words(review)
+    
+    	#Getting the positive scores
+        pos=(analyzer.polarity_scores(review))['pos']
+    
+        pos_list.append(pos)
+    
+        print(i,pos)
+        
+    return pos_list
+
+
+sentscore(new1)
 
