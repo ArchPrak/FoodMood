@@ -17,7 +17,7 @@ With our analysis, we aim at helping upcoming entrepreneurs take the right decis
 
 ### Files 
  <ul>
-      <li> <code>Final_project.py</code> : The entire implementation in Python. Contains code for the Exploratory Data Analysis, Pre-processing and Modelling.</li>
-      <li> <code> Phase1.py</code> and <code> preprocessEDA.R</code>  contain the code for Pre-processing and Exploratory Data Analysis in Python and R, respectively.</li>
+      <li> <code>final_project.py</code> : The entire implementation in Python. Contains code for the Exploratory Data Analysis, Pre-processing and Modelling.</li>
+      <li> <code> phase1.py</code> and <code> preprocessingEDA.R</code>  contain the code for Pre-processing and Exploratory Data Analysis in Python and R, respectively.</li>
  </ul>
 
